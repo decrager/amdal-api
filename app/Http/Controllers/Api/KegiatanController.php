@@ -115,13 +115,21 @@ class KegiatanController extends Controller
         ]);
     }
 
-    public function jml_prov() // Jumlah UKL-UPL MR per provinsi di Admin Pusat
+    public function jml_prov(Request $request) // Jumlah UKL-UPL MR per provinsi di Admin Pusat
     {
-        $prov = DB::select(DB::raw("SELECT i.name_1 as prov, count(i.name_1) as jumlah FROM kegiatan
+        if ($request->dokumen) {
+            $filter = " where jenisdokumen = '" . $request->dokumen . "' and jenis_risiko = 'Menengah Rendah' ";
+        } else {
+            $filter = " where (jenisdokumen = 'SPPL' or jenisdokumen = 'ULK-UPL') and jenis_risiko = 'Menengah Rendah' ";
+        }
+
+        $query = "SELECT i.name_1 as prov, count(i.name_1) as jumlah FROM kegiatan
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
-        left join idn_adm1 AS i ON kl.id_prov = id_1  
-        where jenisdokumen = 'UKL-UPL' and jenis_risiko = 'Menengah Rendah'
-        GROUP BY prov"));
+        left join idn_adm1 AS i ON kl.id_prov = id_1" .
+        $filter
+        ."GROUP BY prov";
+
+        $prov = DB::select(DB::raw($query));
 
         return response()->json([
             "success" => true,
