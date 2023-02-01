@@ -68,9 +68,29 @@ class KegiatanController extends Controller
         ]);
     }
 
-    public function statistik() // Statistik pertanggal
+    public function statistik(Request $request) // Statistik pertanggal
     {
-        $statistik = DB::select(DB::raw("SELECT count(kegiatan) as jumlah, to_char(to_timestamp(tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') AS tanggal_record FROM kegiatan GROUP BY tanggal_record order by tanggal_record asc"));
+        $date_start = $request->start_date;
+        $date_end = $request->end_date;
+
+        if ($date_start AND $date_end) {
+            $date = " AND to_char(to_timestamp(tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date_start . "' AND to_char(to_timestamp(tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date_end . "' ";
+        } else {
+            $date = "";
+        }
+
+        if ($request->perbulan == 1) {
+            $statistik = DB::select(DB::raw("SELECT count(kegiatan) AS jumlah, to_char(to_timestamp(tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY-MM') AS bulan
+            FROM kegiatan WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah'
+            ". $date ."
+            GROUP BY bulan ORDER BY bulan ASC"));
+        } else {
+            $statistik = DB::select(DB::raw("SELECT count(kegiatan) as jumlah, to_char(to_timestamp(tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') AS tanggal_record
+            FROM kegiatan WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah'
+            ". $date ."
+            GROUP BY tanggal_record ORDER BY tanggal_record ASC"));
+        }
+
         return response()->json([
             "success" => true,
             "message" => "Data List",
