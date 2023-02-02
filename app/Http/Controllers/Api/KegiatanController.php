@@ -11,10 +11,10 @@ class KegiatanController extends Controller
 {
     public function index(Request $request) // Datatable
     {
-        $kegiatan = Kegiatan::join('user_pemrakarsa', 'kegiatan.id_pemrakarsa', 'user_pemrakarsa.id_pemrakarsa')
-        ->join('kegiatan_lokasi', 'kegiatan.id_kegiatan', 'kegiatan_lokasi.id_kegiatan')
-        ->join('idn_adm1', 'kegiatan_lokasi.id_prov', 'idn_adm1.id_1')
-        ->join('idn_adm2', 'kegiatan_lokasi.id_kota', 'idn_adm2.id_2')
+        $kegiatan = Kegiatan::leftJoin('user_pemrakarsa', 'kegiatan.id_pemrakarsa', 'user_pemrakarsa.id_pemrakarsa')
+        ->leftJoin('kegiatan_lokasi', 'kegiatan.id_kegiatan', 'kegiatan_lokasi.id_kegiatan')
+        ->leftJoin('idn_adm1', 'kegiatan_lokasi.id_prov', 'idn_adm1.id_1')
+        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'idn_adm2.id_2')
         ->select(
             'kegiatan.sid',
             'user_pemrakarsa.oss_nib',
@@ -77,6 +77,21 @@ class KegiatanController extends Controller
             "success" => true,
             "message" => "Data List",
             "data" => $total
+        ]);
+    }
+
+    public function filteredTotal()
+    {
+        $total = Kegiatan::leftJoin('user_pemrakarsa', 'kegiatan.id_pemrakarsa', 'user_pemrakarsa.id_pemrakarsa')
+        ->leftJoin('kegiatan_lokasi', 'kegiatan.id_kegiatan', 'kegiatan_lokasi.id_kegiatan')
+        ->leftJoin('idn_adm1', 'kegiatan_lokasi.id_prov', 'idn_adm1.id_1')
+        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'idn_adm2.id_2')
+        ->selectRaw('count(*)');
+
+        return response()->json([
+            "success" => true,
+            "message" => "Data List",
+            "data" => $total->get()
         ]);
     }
 

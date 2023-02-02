@@ -33,5 +33,6 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::get('jml_prov', [KegiatanController::class, 'jml_prov']); // Jumlah UKL-UPL MR per provinsi di Admin Pusat
     Route::get('jml_kegiatan', [KegiatanController::class, 'jml_kegiatan']);
     Route::get('total', [KegiatanController::class, 'total']);
+    Route::get('filteredTotal', [KegiatanController::class, 'filteredTotal']);
     Route::get('cluster', [KegiatanController::class, 'cluster']);
 });
