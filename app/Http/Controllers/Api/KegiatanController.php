@@ -37,7 +37,7 @@ class KegiatanController extends Controller
         if ($request->kewenangan) {
             $kegiatan->where('kegiatan.kewenangan', $request->kewenangan);
         } if ($request->limit) {
-            $kegiatan->take($request->limit);
+            $kegiatan->limit($request->limit)->offset($request->offset);
         } if ($request->search) {
             $kegiatan->where('user_pemrakarsa.oss_nib', 'LIKE', '%' . $request->search . '%')
             ->orWhere('user_pemrakarsa.pemrakarsa', 'LIKE', '%' . $request->search . '%')
@@ -61,9 +61,11 @@ class KegiatanController extends Controller
             }
         }
 
+        $total = count($kegiatan->get());
         return response()->json([
             "success" => true,
             "message" => "Data List",
+            "total" => $total,
             "data" => $kegiatan->get()
         ]);
     }
