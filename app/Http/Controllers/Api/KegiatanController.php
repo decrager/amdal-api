@@ -34,8 +34,6 @@ class KegiatanController extends Controller
             'idn_adm2.name_2',
         );
 
-        // $total = count($kegiatan->get());
-
         if ($request->kewenangan) {
             $kegiatan->where('kegiatan.kewenangan', $request->kewenangan);
         } if ($request->limit) {
@@ -68,6 +66,17 @@ class KegiatanController extends Controller
             "message" => "Data List",
             // "total" => $total,
             "data" => $kegiatan->get()
+        ]);
+    }
+
+    public function total()
+    {
+        $total = DB::select(DB::raw('SELECT count(kegiatan) FROM kegiatan'));
+
+        return response()->json([
+            "success" => true,
+            "message" => "Data List",
+            "data" => $total
         ]);
     }
 
