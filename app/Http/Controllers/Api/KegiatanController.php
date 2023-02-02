@@ -34,7 +34,7 @@ class KegiatanController extends Controller
             'idn_adm2.name_2',
         );
 
-        $total = count($kegiatan->get());
+        // $total = count($kegiatan->get());
 
         if ($request->kewenangan) {
             $kegiatan->where('kegiatan.kewenangan', $request->kewenangan);
@@ -66,7 +66,7 @@ class KegiatanController extends Controller
         return response()->json([
             "success" => true,
             "message" => "Data List",
-            "total" => $total,
+            // "total" => $total,
             "data" => $kegiatan->get()
         ]);
     }
