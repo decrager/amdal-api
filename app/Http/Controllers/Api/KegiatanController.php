@@ -34,6 +34,8 @@ class KegiatanController extends Controller
             'idn_adm2.name_2',
         );
 
+        $total = count($kegiatan->get());
+
         if ($request->kewenangan) {
             $kegiatan->where('kegiatan.kewenangan', $request->kewenangan);
         } if ($request->limit) {
@@ -61,7 +63,6 @@ class KegiatanController extends Controller
             }
         }
 
-        $total = count($kegiatan->get());
         return response()->json([
             "success" => true,
             "message" => "Data List",
