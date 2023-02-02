@@ -80,6 +80,21 @@ class KegiatanController extends Controller
         ]);
     }
 
+    public function cluster()
+    {
+        $cluster = DB::select(DB::raw("SELECT cluster_kbli.cluster_formulir, count(kegiatan) AS total
+        FROM cluster_kbli JOIN kegiatan
+        ON kegiatan.kbli = ANY (cluster_kbli.list_kbli)
+        WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah'
+        GROUP BY cluster_kbli.cluster_formulir"));
+
+        return response()->json([
+            "success" => true,
+            "message" => "Data List",
+            "data" => $cluster
+        ]);
+    }
+
     public function statistik(Request $request) // Statistik pertanggal
     {
         $date_start = $request->start_date;
