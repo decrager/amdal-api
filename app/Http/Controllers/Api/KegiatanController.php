@@ -14,7 +14,7 @@ class KegiatanController extends Controller
         $kegiatan = Kegiatan::join('user_pemrakarsa', 'kegiatan.id_pemrakarsa', 'user_pemrakarsa.id_pemrakarsa')
         ->leftJoin('kegiatan_lokasi', 'kegiatan.id_kegiatan', 'kegiatan_lokasi.id_kegiatan')
         ->leftJoin('idn_adm1', 'kegiatan_lokasi.id_prov', 'idn_adm1.id_1')
-        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'idn_adm2.id_2')
+        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'j.id_2')
         ->select(
             'kegiatan.sid',
             'user_pemrakarsa.oss_nib',
@@ -35,8 +35,16 @@ class KegiatanController extends Controller
         );
 
         if ($request->kewenangan) {
-            $kegiatan->where('kegiatan.kewenangan', $request->kewenangan);
-        } if ($request->limit) {
+            $kegiatan->where('kegiatan.kewenangan', 'LIKE', '%' . $request->kewenangan . '%');
+            if ($request->provinsi) {
+                $kegiatan->where('idn_adm1.provinsi', 'LIKE', '%' . $request->provinsi . '%');
+                if ($request->kabkota) {
+                    $kegiatan->where('idn_adm2.kab_kota', 'LIKE', '%' . $request->kabkota . '%');
+                }
+            }
+        }
+        
+        if ($request->limit) {
             $kegiatan->limit($request->limit)->offset($request->offset);
         } if ($request->search) {
             $kegiatan->where('user_pemrakarsa.oss_nib', 'LIKE', '%' . $request->search . '%')
@@ -53,12 +61,6 @@ class KegiatanController extends Controller
             ->orWhere('kegiatan.pkplh_doc', 'LIKE', '%' . $request->search . '%')
             ->orWhere('idn_adm1.name_1', 'LIKE', '%' . $request->search . '%')
             ->orWhere('idn_adm2.name_2', 'LIKE', '%' . $request->search . '%');
-        } if ($request->provinsi) {
-            if ($request->search) {
-                $kegiatan->orWhere('idn_adm1.name_1', 'LIKE', '%' . $request->provinsi . '%');
-            } else {
-                $kegiatan->where('idn_adm1.name_1', 'LIKE', '%' . $request->provinsi . '%');
-            }
         }
 
         return response()->json([
@@ -74,7 +76,7 @@ class KegiatanController extends Controller
         $total = Kegiatan::join('user_pemrakarsa', 'kegiatan.id_pemrakarsa', 'user_pemrakarsa.id_pemrakarsa')
         ->leftJoin('kegiatan_lokasi', 'kegiatan.id_kegiatan', 'kegiatan_lokasi.id_kegiatan')
         ->leftJoin('idn_adm1', 'kegiatan_lokasi.id_prov', 'idn_adm1.id_1')
-        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'idn_adm2.id_2')
+        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'j.id_2')
         ->selectRaw('count(*)');
 
         return response()->json([
@@ -89,10 +91,16 @@ class KegiatanController extends Controller
         $total = Kegiatan::join('user_pemrakarsa', 'kegiatan.id_pemrakarsa', 'user_pemrakarsa.id_pemrakarsa')
         ->leftJoin('kegiatan_lokasi', 'kegiatan.id_kegiatan', 'kegiatan_lokasi.id_kegiatan')
         ->leftJoin('idn_adm1', 'kegiatan_lokasi.id_prov', 'idn_adm1.id_1')
-        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'idn_adm2.id_2');
+        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'j.id_2');
         
         if ($request->kewenangan) {
-            $total->where('kegiatan.kewenangan', $request->kewenangan);
+            $total->where('kegiatan.kewenangan', 'LIKE', '%' . $request->kewenangan . '%');
+            if ($request->provinsi) {
+                $total->where('idn_adm1.provinsi', 'LIKE', '%' . $request->provinsi . '%');
+                if ($request->kabkota) {
+                    $total->where('idn_adm2.kab_kota', 'LIKE', '%' . $request->kabkota . '%');
+                }
+            }
         }
 
         return response()->json([
@@ -122,21 +130,41 @@ class KegiatanController extends Controller
         $date_start = $request->start_date;
         $date_end = $request->end_date;
 
+        $filter = "";
+
+        if ($request->kewenangan) {
+            $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            if ($request->provinsi) {
+                $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+                if ($request->kabkota) {
+                    $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                }
+            }
+        }
+
         if ($date_start AND $date_end) {
-            $date = " AND to_char(to_timestamp(tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date_start . "' AND to_char(to_timestamp(tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date_end . "' ";
+            $date = " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date_start . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date_end . "' ";
         } else {
             $date = "";
         }
 
         if ($request->perbulan == 1) {
-            $statistik = DB::select(DB::raw("SELECT count(kegiatan) AS jumlah, to_char(to_timestamp(tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY-MM') AS bulan
-            FROM kegiatan WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah'
-            ". $date ."
+            $statistik = DB::select(DB::raw("SELECT count(*) AS jumlah, to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY-MM') AS bulan
+            FROM kegiatan
+            left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
+            left join idn_adm1 AS i ON kl.id_prov = id_1
+            left join idn_adm2 AS j ON kl.id_kota = j.id_2
+            WHERE kegiatan.jenisdokumen = 'UKL-UPL' AND kegiatan.jenis_risiko = 'Menengah Rendah'
+            ". $date . $filter ."
             GROUP BY bulan ORDER BY bulan ASC"));
         } else {
-            $statistik = DB::select(DB::raw("SELECT count(kegiatan) as jumlah, to_char(to_timestamp(tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') AS tanggal_record
-            FROM kegiatan WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah'
-            ". $date ."
+            $statistik = DB::select(DB::raw("SELECT count(*) as jumlah, to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') AS tanggal_record
+            FROM kegiatan
+            left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
+            left join idn_adm1 AS i ON kl.id_prov = id_1
+            left join idn_adm2 AS j ON kl.id_kota = j.id_2
+            WHERE kegiatan.jenisdokumen = 'UKL-UPL' AND kegiatan.jenis_risiko = 'Menengah Rendah'
+            ". $date . $filter ."
             GROUP BY tanggal_record ORDER BY tanggal_record ASC"));
         }
 
@@ -147,9 +175,25 @@ class KegiatanController extends Controller
         ]);
     }
 
-    public function uklupl_sppl() // Jumlah UKL-UPL MR dan SPPL
+    public function uklupl_sppl(Request $request) // Jumlah UKL-UPL MR dan SPPL
     {
-        $jenis = DB::select(DB::raw("SELECT count(jenisdokumen) as jumlah, jenisdokumen FROM kegiatan where (jenisdokumen = 'UKL-UPL' and jenis_risiko = 'Menengah Rendah') or jenisdokumen = 'SPPL' GROUP BY jenisdokumen "));
+        $filter = "";
+
+        if ($request->kewenangan) {
+            $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            if ($request->provinsi) {
+                $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+                if ($request->kabkota) {
+                    $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                }
+            }
+        }
+
+        $jenis = DB::select(DB::raw("SELECT count(kegiatan.kewenangan) as jumlah, kegiatan.kewenangan FROM kegiatan
+        left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
+        left join idn_adm1 AS i ON kl.id_prov = id_1
+        left join idn_adm2 AS j ON kl.id_kota = j.id_2
+        where (kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah' " . $filter . ") or kegiatan.jenisdokumen = 'SPPL' GROUP BY kegiatan.kewenangan"));
 
         return response()->json([
             "success" => true,
@@ -158,11 +202,25 @@ class KegiatanController extends Controller
         ]);
     }
 
-    public function uklupl_pusat() // Jumlah data UKL-UPL MR per kewenangan di Admin Pusat
+    public function uklupl_pusat(Request $request) // Jumlah data UKL-UPL MR per kewenangan di Admin Pusat
     {
-        $uklupl = DB::select(DB::raw("SELECT count(kewenangan) as jumlah, kewenangan FROM kegiatan
-        where jenisdokumen = 'UKL-UPL' and jenis_risiko = 'Menengah Rendah'
-        GROUP BY kewenangan"));
+        $filter = "";
+
+        if ($request->kewenangan) {
+            $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            if ($request->provinsi) {
+                $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+                if ($request->kabkota) {
+                    $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                }
+            }
+        }
+
+        $uklupl = DB::select(DB::raw("SELECT count(kegiatan.kewenangan) as jumlah, kegiatan.kewenangan FROM kegiatan
+        left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
+        left join idn_adm1 AS i ON kl.id_prov = id_1
+        left join idn_adm2 AS j ON kl.id_kota = j.id_2
+        where kegiatan.jenisdokumen = 'UKL-UPL' " . $filter . "and kegiatan.jenis_risiko = 'Menengah Rendah' GROUP BY kegiatan.kewenangan"));
 
         return response()->json([
             "success" => true,
@@ -171,11 +229,25 @@ class KegiatanController extends Controller
         ]);
     }
 
-    public function sppl_pusat() // Jumlah data SPPL per kewenangan di Admin Pusat
+    public function sppl_pusat(Request $request) // Jumlah data SPPL per kewenangan di Admin Pusat
     {
-        $sppl = DB::select(DB::raw("SELECT count(kewenangan) as jumlah, kewenangan FROM kegiatan
-        where jenisdokumen = 'SPPL' 
-        GROUP BY kewenangan"));
+        $filter = "";
+
+        if ($request->kewenangan) {
+            $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            if ($request->provinsi) {
+                $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+                if ($request->kabkota) {
+                    $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                }
+            }
+        }
+
+        $sppl = DB::select(DB::raw("SELECT count(kegiatan.kewenangan) as jumlah, kegiatan.kewenangan FROM kegiatan
+        left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
+        left join idn_adm1 AS i ON kl.id_prov = id_1
+        left join idn_adm2 AS j ON kl.id_kota = j.id_2
+        where kegiatan.jenisdokumen = 'SPPL' " . $filter . "and kegiatan.jenis_risiko = 'Menengah Rendah' GROUP BY kegiatan.kewenangan"));
 
         return response()->json([
             "success" => true,
@@ -187,9 +259,16 @@ class KegiatanController extends Controller
     public function jml_prov(Request $request) // Jumlah UKL-UPL MR per provinsi di Admin Pusat
     {
         if ($request->dokumen) {
-            $filter = " where jenisdokumen = '" . $request->dokumen . "' and jenis_risiko = 'Menengah Rendah' ";
+            $filter = " WHERE kegiatan.jenisdokumen = '" . $request->dokumen . "' AND kegiatan.jenis_risiko = 'Menengah Rendah' ";
         } else {
-            $filter = " where (jenisdokumen = 'SPPL' or jenisdokumen = 'ULK-UPL') and jenis_risiko = 'Menengah Rendah' ";
+            $filter = " WHERE (kegiatan.jenisdokumen = 'SPPL' or kegiatan.jenisdokumen = 'UKL-UPL') AND kegiatan.jenis_risiko = 'Menengah Rendah' ";
+        }
+
+        if ($request->dokumen && $request->kewenangan) {
+            $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            if ($request->provinsi) {
+                $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            }
         }
 
         $query = "SELECT i.name_1 as prov, count(i.name_1) as jumlah FROM kegiatan
