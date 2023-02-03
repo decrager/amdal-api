@@ -71,17 +71,6 @@ class KegiatanController extends Controller
 
     public function total()
     {
-        $total = DB::select(DB::raw('SELECT count(kegiatan) FROM kegiatan'));
-
-        return response()->json([
-            "success" => true,
-            "message" => "Data List",
-            "data" => $total
-        ]);
-    }
-
-    public function filteredTotal()
-    {
         $total = Kegiatan::join('user_pemrakarsa', 'kegiatan.id_pemrakarsa', 'user_pemrakarsa.id_pemrakarsa')
         ->leftJoin('kegiatan_lokasi', 'kegiatan.id_kegiatan', 'kegiatan_lokasi.id_kegiatan')
         ->leftJoin('idn_adm1', 'kegiatan_lokasi.id_prov', 'idn_adm1.id_1')
@@ -91,7 +80,25 @@ class KegiatanController extends Controller
         return response()->json([
             "success" => true,
             "message" => "Data List",
-            "data" => $total->get()
+            "data" => $total
+        ]);
+    }
+
+    public function filteredTotal(Request $request)
+    {
+        $total = Kegiatan::join('user_pemrakarsa', 'kegiatan.id_pemrakarsa', 'user_pemrakarsa.id_pemrakarsa')
+        ->leftJoin('kegiatan_lokasi', 'kegiatan.id_kegiatan', 'kegiatan_lokasi.id_kegiatan')
+        ->leftJoin('idn_adm1', 'kegiatan_lokasi.id_prov', 'idn_adm1.id_1')
+        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'idn_adm2.id_2');
+        
+        if ($request->kewenangan) {
+            $total->where('kegiatan.kewenangan', $request->kewenangan);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Data List",
+            "data" => $total->selectRaw('count(*)')->get()
         ]);
     }
 
