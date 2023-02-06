@@ -133,7 +133,7 @@ class KegiatanController extends Controller
             }
         }
 
-        $cluster = DB::select(DB::raw("SELECT cluster_kbli.cluster_formulir, count(kegiatan) AS total
+        $cluster = DB::select(DB::raw("SELECT cluster_kbli.cluster_short, count(kegiatan) AS total
         FROM cluster_kbli JOIN kegiatan
         ON kegiatan.kbli = ANY (cluster_kbli.list_kbli)
         WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah' " . $filter . $dateFilter . "
