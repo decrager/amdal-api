@@ -91,7 +91,7 @@ class KegiatanController extends Controller
         $total = Kegiatan::join('user_pemrakarsa', 'kegiatan.id_pemrakarsa', 'user_pemrakarsa.id_pemrakarsa')
         ->leftJoin('kegiatan_lokasi', 'kegiatan.id_kegiatan', 'kegiatan_lokasi.id_kegiatan')
         ->leftJoin('idn_adm1', 'kegiatan_lokasi.id_prov', 'idn_adm1.id_1')
-        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'j.id_2');
+        ->leftJoin('idn_adm2', 'kegiatan_lokasi.id_kota', 'idn_adm2.id_2');
         
         if ($request->kewenangan) {
             $total->where('kegiatan.kewenangan', 'LIKE', '%' . $request->kewenangan . '%');
