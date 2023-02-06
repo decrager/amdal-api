@@ -373,14 +373,25 @@ class KegiatanController extends Controller
     {
         $doc = "";
         if ($request->dokumen == "UKL-UPL") {
-            $doc .= " where (jenisdokumen = 'UKL-UPL' and jenis_risiko = 'Menengah Rendah') and ";
+            $doc .= " and (kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') ";
         } elseif ($request->dokumen == "SPPL") {
-            $doc .= " where (jenisdokumen = 'SPPL') and ";
+            $doc .= " and (kegiatan.jenisdokumen = 'SPPL') ";
+        }
+
+        $filter = "";
+        if ($request->provinsi) {
+            $filter .= "WHERE i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            if ($request->kabkota) {
+                $filter .= "WHERE j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+            }
         }
 
         $total = DB::select(DB::raw("SELECT count(*) FROM kegiatan
-        " . $doc . "
-        to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now()"));
+        left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
+        left join idn_adm1 AS i ON kl.id_prov = id_1
+        left join idn_adm2 AS j ON kl.id_kota = j.id_2
+        " . $filter . $doc . "
+        and to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now()"));
 
         return response()->json([
             "success" => true,
