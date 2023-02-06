@@ -36,7 +36,7 @@ class KegiatanController extends Controller
         }
 
         $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, notelp, email, pemrakarsa, judul_kegiatan, skala, kewenangan,
-        to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd HH:MI:ss') AS tanggal_input,
+        to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd HH24:MI:ss') AS tanggal_input,
         jenisdokumen, id_proyek, jenis_risiko, kbli, file, pkplh_doc, kl.lokasi, name_1 as prov, name_2 as kota,
         case when file is null then '-' else concat('<a class=\"btn btn-sm btn-success\" href="."https://amdal.menlhk.go.id/amdalnet', replace(file,'./assets', '/assets'), '"." target="."_blank"."><i class=\"fas fa-download\"></i></a>') end as file_url,
         case when pkplh_local_doc is null then '-' else concat('<a class=\"btn btn-sm btn-success\" href="."https://amdal.menlhk.go.id/amdalnet/assets/uploads/pkplh/', pkplh_local_doc, '"." target="."_blank"."><i class=\"fas fa-download\"></i></a>') end as pl_url
@@ -79,26 +79,27 @@ class KegiatanController extends Controller
 
         $dateFilter = "";
         if ($date_start AND $date_end) {
-            $dateFilter .= " WHERE to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date_start . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date_end . "' ";
+            $dateFilter .= " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date_start . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date_end . "' ";
         } else {
-            $dateFilter .= " WHERE to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date['start'] . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date['now'] . "' ";
+            $dateFilter .= " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date['start'] . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date['now'] . "' ";
         }
 
         $filter = "";
-        if ($request->provinsi) {
-            $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
-            if ($request->kabkota) {
-                $filter .= " AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
-            }
+        if ($request->provinsi && empty($request->kabkota)) {
+            $filter .= " WHERE i.provinsi LIKE '%" . $request->provinsi . "%' ";
+        }
+        if ($request->kabkota && $request->kabkota) {
+            $filter .= " WHERE (i.provinsi LIKE '%" . $request->provinsi . "%' AND j.kab_kota LIKE '%" . $request->kabkota . "%') ";
         }
 
         $total = DB::select(DB::raw("SELECT count(*)
         FROM kegiatan
-        inner join user_pemrakarsa as up on kegiatan.id_pemrakarsa = up.id_pemrakarsa
+        inner join user_pemrakarsa as up on (kegiatan.id_pemrakarsa = up.id_pemrakarsa) and 
+        ((kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') or kegiatan.jenisdokumen = 'SPPL')
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
         left join idn_adm1 AS i ON kl.id_prov = i.id_1
         left join idn_adm2 AS j ON kl.id_kota = j.id_2
-        ". $dateFilter . $filter . ""));
+        ". $filter . "and (to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now())"));
 
         return response()->json([
             "success" => true,
