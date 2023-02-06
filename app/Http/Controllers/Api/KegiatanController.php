@@ -382,7 +382,7 @@ class KegiatanController extends Controller
         if ($request->provinsi) {
             $filter .= "WHERE i.provinsi LIKE '%" . $request->provinsi . "%' ";
             if ($request->kabkota) {
-                $filter .= "WHERE j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
             }
         }
 
