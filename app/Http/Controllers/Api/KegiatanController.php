@@ -135,11 +135,23 @@ class KegiatanController extends Controller
         } else {
             $dateFilter .= " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date['start'] . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date['now'] . "' ";
         }
+        
+        $filter = "";
+
+        if ($request->kewenangan) {
+            $filter .= " AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            if ($request->provinsi) {
+                $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+                if ($request->kabkota) {
+                    $filter .= " AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                }
+            }
+        }
 
         $cluster = DB::select(DB::raw("SELECT cluster_kbli.cluster_formulir, count(kegiatan) AS total
         FROM cluster_kbli JOIN kegiatan
         ON kegiatan.kbli = ANY (cluster_kbli.list_kbli)
-        WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah' " . $dateFilter . "
+        WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah' " . $filter . $dateFilter . "
         GROUP BY cluster_kbli.cluster_formulir"));
 
         return response()->json([
