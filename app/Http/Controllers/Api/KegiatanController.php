@@ -136,7 +136,7 @@ class KegiatanController extends Controller
         left join idn_adm2 AS j ON kl.id_kota = j.id_2
         ON kegiatan.kbli = ANY (cluster_kbli.list_kbli)
         WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah' " . $filter . $dateFilter . "
-        GROUP BY cluster_kbli.cluster_short"));
+        GROUP BY cluster_kbli.cluster_formulir, cluster_kbli.sid ORDER BY cluster_kbli.sid DESC"));
 
         return response()->json([
             "success" => true,
