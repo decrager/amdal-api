@@ -37,7 +37,8 @@ class KegiatanController extends Controller
 
         $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, pemrakarsa, judul_kegiatan, skala, kewenangan,
         to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd HH:MI:ss') AS tanggal_input,
-        jenisdokumen, id_proyek, jenis_risiko, kbli, file, pkplh_doc, kl.lokasi, name_1 as prov, name_2 as kota 
+        jenisdokumen, id_proyek, jenis_risiko, kbli, file, pkplh_doc, kl.lokasi, name_1 as prov, name_2 as kota,
+        concat('<a href="."https://amdal.menlhk.go.id/amdalnet', replace(file,'./assets', '/assets'), '"." target="."_blank"."><span class="."fa fa-download"."></span> &nbsp;Download</a>') as file_url
         from kegiatan
         inner join user_pemrakarsa on (kegiatan.id_pemrakarsa = user_pemrakarsa.id_pemrakarsa)
         and ((kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') or kegiatan.jenisdokumen = 'SPPL')
