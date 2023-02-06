@@ -29,38 +29,23 @@ class KegiatanController extends Controller
         }
 
         $filter = "";
-        if ($request->kewenangan) {
-            $filter .= " AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
-            if ($request->provinsi) {
-                $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
-                if ($request->kabkota) {
-                    $filter .= " AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
-                }
-            }
+        if ($request->provinsi && empty($request->kabkota)) {
+            $filter = " WHERE (i.provinsi like '%" . $request->provinsi . "%')";
+        } elseif ($request->provinsi && $request->kabkota) {
+            $filter = " WHERE (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
         }
 
-        $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid,
-        up.oss_nib,
-        up.pemrakarsa,
-        kegiatan.judul_kegiatan,
-        kegiatan.skala,
-        kegiatan.kewenangan,
+        $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, pemrakarsa, judul_kegiatan, skala, kewenangan,
         to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd HH:MI:ss') AS tanggal_input,
-        kegiatan.jenisdokumen,
-        kegiatan.id_proyek,
-        kegiatan.jenis_risiko,
-        kegiatan.kbli,
-        kegiatan.file,
-        kegiatan.pkplh_doc,
-        kl.lokasi,
-        i.name_1,
-        j.name_2
-        FROM kegiatan
-        inner join user_pemrakarsa as up on kegiatan.id_pemrakarsa = up.id_pemrakarsa
+        jenisdokumen, id_proyek, jenis_risiko, kbli, file, pkplh_doc, kl.lokasi, name_1 as prov, name_2 as kota 
+        from kegiatan
+        inner join user_pemrakarsa on (kegiatan.id_pemrakarsa = user_pemrakarsa.id_pemrakarsa)
+        and ((kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') or kegiatan.jenisdokumen = 'SPPL')
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
-        left join idn_adm1 AS i ON kl.id_prov = i.id_1
-        left join idn_adm2 AS j ON kl.id_kota = j.id_2
-        ". $dateFilter . $filter . " ORDER BY tanggal_input DESC ". $limit . ""));
+        left join idn_adm1 AS i ON kl.id_prov = id_1 
+        left join idn_adm2 AS i2 ON kl.id_kota = id_2 " . $filter . "
+        and (to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now())
+        ORDER BY sid desc" . $limit));
 
         return response()->json([
             "success" => true,
