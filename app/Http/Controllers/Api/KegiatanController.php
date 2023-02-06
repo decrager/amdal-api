@@ -162,11 +162,11 @@ class KegiatanController extends Controller
 
         if ($request->kewenangan) {
             $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
-            if ($request->provinsi) {
-                $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
-                if ($request->kabkota) {
-                    $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
-                }
+        }
+        if ($request->provinsi) {
+            $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            if ($request->kabkota) {
+                $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
             }
         }
 
@@ -214,11 +214,11 @@ class KegiatanController extends Controller
 
         if ($request->kewenangan) {
             $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
-            if ($request->provinsi) {
-                $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
-                if ($request->kabkota) {
-                    $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
-                }
+        }
+        if ($request->provinsi) {
+            $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            if ($request->kabkota) {
+                $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
             }
         }
 
@@ -302,7 +302,7 @@ class KegiatanController extends Controller
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
         left join idn_adm1 AS i ON kl.id_prov = id_1
         left join idn_adm2 AS j ON kl.id_kota = j.id_2
-        where kegiatan.jenisdokumen = 'SPPL' " . $filter . $dateFilter . "and kegiatan.jenis_risiko = 'Menengah Rendah' GROUP BY kegiatan.kewenangan"));
+        where kegiatan.jenisdokumen = 'SPPL' " . $filter . $dateFilter . " GROUP BY kegiatan.kewenangan"));
 
         return response()->json([
             "success" => true,
