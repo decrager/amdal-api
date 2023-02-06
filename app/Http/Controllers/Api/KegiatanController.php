@@ -137,7 +137,7 @@ class KegiatanController extends Controller
         FROM cluster_kbli JOIN kegiatan
         ON kegiatan.kbli = ANY (cluster_kbli.list_kbli)
         WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah' " . $filter . $dateFilter . "
-        GROUP BY cluster_kbli.cluster_formulir"));
+        GROUP BY cluster_kbli.cluster_short"));
 
         return response()->json([
             "success" => true,
