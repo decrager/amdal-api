@@ -35,7 +35,7 @@ class KegiatanController extends Controller
             $filter = " AND (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
         }
 
-        $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, pemrakarsa, judul_kegiatan, skala, kewenangan,
+        $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, notelp, email, pemrakarsa, judul_kegiatan, skala, kewenangan,
         to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd HH:MI:ss') AS tanggal_input,
         jenisdokumen, id_proyek, jenis_risiko, kbli, file, pkplh_doc, kl.lokasi, name_1 as prov, name_2 as kota,
         case when file is null then '-' else concat('<a class=\"btn btn-sm btn-success\" href="."https://amdal.menlhk.go.id/amdalnet', replace(file,'./assets', '/assets'), '"." target="."_blank"."><i class=\"fas fa-download\"></i></a>') end as file_url,
@@ -122,18 +122,18 @@ class KegiatanController extends Controller
         
         $filter = "";
 
-        if ($request->kewenangan) {
-            $filter .= " AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
-            if ($request->provinsi) {
-                $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
-                if ($request->kabkota) {
-                    $filter .= " AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
-                }
+        if ($request->provinsi) {
+            $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            if ($request->kabkota) {
+                $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
             }
         }
 
         $cluster = DB::select(DB::raw("SELECT cluster_kbli.cluster_short, count(kegiatan) AS total
         FROM cluster_kbli JOIN kegiatan
+        left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
+        left join idn_adm1 AS i ON kl.id_prov = id_1
+        left join idn_adm2 AS j ON kl.id_kota = j.id_2
         ON kegiatan.kbli = ANY (cluster_kbli.list_kbli)
         WHERE jenisdokumen = 'UKL-UPL' AND jenis_risiko = 'Menengah Rendah' " . $filter . $dateFilter . "
         GROUP BY cluster_kbli.cluster_short"));
