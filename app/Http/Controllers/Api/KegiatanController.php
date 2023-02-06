@@ -37,8 +37,8 @@ class KegiatanController extends Controller
 
         $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, pemrakarsa, judul_kegiatan, skala, kewenangan,
         to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd HH:MI:ss') AS tanggal_input,
-        jenisdokumen, id_proyek, jenis_risiko, kbli, file, pkplh_doc, kl.lokasi, name_1 as prov, name_2 as kota,
-        concat('<a class="."btn btn-sm btn-warning"." href="."https://amdal.menlhk.go.id/amdalnet', replace(file,'./assets', '/assets'), '"." target="."_blank"."><i class="."fa fa-download"."> &nbsp;Lampiran</i></a><br><a class="."btn btn-sm btn-warning"." href="."https://amdal.menlhk.go.id/amdalnet/assets/uploads/pkplh/', pkplh_local_doc, '"." target="."_blank"."><i class="."fa fa-download".">&nbsp;PL</i></a>') as file_url
+        jenisdokumen, id_proyek, jenis_risiko, kbli, file, pkplh_doc, kl.lokasi, name_1 as prov, name_2 as kota
+        -- concat('<a class="."btn btn-sm btn-success"."href="."https://amdal.menlhk.go.id/amdalnet', replace(file,'./assets', '/assets'), '"." target="."_blank"."><i class="."fa fa-download"."></i> &nbsp;Download</a>') as file_url
         from kegiatan
         inner join user_pemrakarsa on (kegiatan.id_pemrakarsa = user_pemrakarsa.id_pemrakarsa)
         and ((kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') or kegiatan.jenisdokumen = 'SPPL')
