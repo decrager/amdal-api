@@ -30,9 +30,9 @@ class KegiatanController extends Controller
 
         $filter = "";
         if ($request->provinsi && empty($request->kabkota)) {
-            $filter = " WHERE (i.provinsi like '%" . $request->provinsi . "%')";
+            $filter = " AND (i.provinsi like '%" . $request->provinsi . "%')";
         } elseif ($request->provinsi && $request->kabkota) {
-            $filter = " WHERE (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
+            $filter = " AND (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
         }
 
         $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, pemrakarsa, judul_kegiatan, skala, kewenangan,
@@ -43,7 +43,7 @@ class KegiatanController extends Controller
         and ((kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') or kegiatan.jenisdokumen = 'SPPL')
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
         left join idn_adm1 AS i ON kl.id_prov = id_1 
-        left join idn_adm2 AS i2 ON kl.id_kota = id_2 " . $filter . "
+        left join idn_adm2 AS i2 ON kl.id_kota = id_2 " . $dateFilter . $filter . "
         and (to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now())
         ORDER BY sid desc" . $limit));
 
