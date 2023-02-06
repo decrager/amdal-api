@@ -82,7 +82,7 @@ class KegiatanController extends Controller
         return response()->json([
             "success" => true,
             "message" => "Data List",
-            "data" => $total
+            "data" => $total->get()
         ]);
     }
 
@@ -275,7 +275,7 @@ class KegiatanController extends Controller
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
         left join idn_adm1 AS i ON kl.id_prov = id_1" .
         $filter
-        ."GROUP BY prov";
+        ."GROUP BY prov ORDER BY jumlah DESC";
 
         $prov = DB::select(DB::raw($query));
 
