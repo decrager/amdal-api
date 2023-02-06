@@ -35,4 +35,5 @@ Route::middleware('auth:sanctum')->group( function () {
     Route::get('total', [KegiatanController::class, 'total']);
     Route::get('filteredTotal', [KegiatanController::class, 'filteredTotal']);
     Route::get('cluster', [KegiatanController::class, 'cluster']);
+    Route::get('uklupl_sppl_tot', [KegiatanController::class, 'uklupl_sppl_tot']);
 });
