@@ -336,7 +336,7 @@ class KegiatanController extends Controller
         if ($date_start AND $date_end) {
             $dateFilter .= " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date_start . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date_end . "' ";
         } else {
-            $dateFilter .= " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date['start'] . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date['now'] . "' ";
+            $dateFilter .= " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . '2021/08/01' . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date['now'] . "' ";
         }
 
         if ($request->dokumen) {
@@ -346,9 +346,9 @@ class KegiatanController extends Controller
         }
 
         if ($request->dokumen && $request->kewenangan) {
-            $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            $filter .= " AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
             if ($request->provinsi) {
-                $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+                $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
             }
         }
 
