@@ -376,14 +376,14 @@ class KegiatanController extends Controller
     {
         $doc = "";
         if ($request->dokumen == "UKL-UPL") {
-            $doc .= " and (kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') ";
+            $doc .= " WHERE (kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') ";
         } elseif ($request->dokumen == "SPPL") {
-            $doc .= " and (kegiatan.jenisdokumen = 'SPPL') ";
+            $doc .= " WHERE (kegiatan.jenisdokumen = 'SPPL') ";
         }
 
         $filter = "";
         if ($request->provinsi) {
-            $filter .= "WHERE i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
             if ($request->kabkota) {
                 $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
             }
@@ -393,7 +393,7 @@ class KegiatanController extends Controller
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
         left join idn_adm1 AS i ON kl.id_prov = id_1
         left join idn_adm2 AS j ON kl.id_kota = j.id_2
-        " . $filter . $doc . "
+        " . $doc . $filter . "
         and to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now()"));
 
         return response()->json([
