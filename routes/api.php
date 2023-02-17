@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\KegiatanController;
 use App\Http\Controllers\Api\PassportAuthController;
+use App\Http\Controllers\Api\PublicController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,11 @@ use App\Http\Controllers\Api\PassportAuthController;
 
 Route::post('register', [PassportAuthController::class, 'register']);
 Route::post('login', [PassportAuthController::class, 'login']);
+Route::get('users', [PublicController::class, 'index']);
+Route::get('users/{id}', [PublicController::class, 'indexById']);
+Route::post('users/create', [PublicController::class, 'create']);
+Route::put('users/update/{id}', [PublicController::class, 'update']);
+Route::delete('users/delete/{id}', [PublicController::class, 'destroy']);
 
 Route::middleware('auth:sanctum')->group( function () {
     Route::get('get-user', [PassportAuthController::class, 'userInfo']);
