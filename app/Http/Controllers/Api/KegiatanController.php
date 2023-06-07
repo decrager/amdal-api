@@ -17,16 +17,16 @@ class KegiatanController extends Controller
             $limit .= " limit " . $request->limit . " offset " . $request->offset;
         }
 
-        // $date_start = $request->start_date;
-        // $date_end = $request->end_date;
-        // $date = $this->getDate();
+        $date_start = $request->start_date;
+        $date_end = $request->end_date;
+        $date = $this->getStripDate();
 
-        // $dateFilter = "";
-        // if ($date_start AND $date_end) {
-        //     $dateFilter .= " WHERE to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date_start . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date_end . "' ";
-        // } else {
-        //     $dateFilter .= " WHERE to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '2021-08-01' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date['now'] . "' ";
-        // }
+        $dateFilter = "";
+        if ($date_start AND $date_end) {
+            $dateFilter .= "  AND (to_timestamp(kegiatan.tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '". $date_start ."' AND '". $date_end ."') ";
+        } else {
+            $dateFilter .= " AND (to_timestamp(kegiatan.tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '". $date['start'] ."' AND now()) ";
+        }
 
         $filter = "";
         if ($request->provinsi && empty($request->kabkota)) {
@@ -43,6 +43,7 @@ class KegiatanController extends Controller
         from kegiatan
         inner join user_pemrakarsa on (kegiatan.id_pemrakarsa = user_pemrakarsa.id_pemrakarsa)
         and ((kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') or kegiatan.jenisdokumen = 'SPPL')
+        ". $dateFilter ."
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
         left join idn_adm1 AS i ON kl.id_prov = id_1 
         left join idn_adm2 AS i2 ON kl.id_kota = id_2 " . $filter . "
@@ -59,34 +60,35 @@ class KegiatanController extends Controller
     public function filteredTotal(Request $request)
     {
         #region Date Filter
-        // $date_start = $request->start_date;
-        // $date_end = $request->end_date;
-        // $date = $this->getDate();
+        $date_start = $request->start_date;
+        $date_end = $request->end_date;
+        $date = $this->getStripDate();
 
-        // $dateFilter = "";
-        // if ($date_start AND $date_end) {
-        //     $dateFilter .= " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date_start . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date_end . "' ";
-        // } else {
-        //     $dateFilter .= " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date['start'] . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date['now'] . "' ";
-        // }
+        $dateFilter = "";
+        if ($date_start AND $date_end) {
+            $dateFilter .= " AND (to_timestamp(kegiatan.tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '". $date_start ."' AND '". $date_end ."')";
+        } else {
+            $dateFilter .= " AND (to_timestamp(kegiatan.tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '". $date['start'] ."' AND now())";
+        }
         #endregion
 
         $filter = "";
         if ($request->provinsi && empty($request->kabkota)) {
             $filter .= " WHERE i.provinsi LIKE '%" . $request->provinsi . "%' ";
-        }
-        if ($request->kabkota && $request->kabkota) {
+        } if ($request->kabkota && $request->kabkota) {
             $filter .= " WHERE (i.provinsi LIKE '%" . $request->provinsi . "%' AND j.kab_kota LIKE '%" . $request->kabkota . "%') ";
         }
 
         $total = DB::select(DB::raw("SELECT count(kegiatan.*)
         FROM kegiatan
         inner join user_pemrakarsa on (kegiatan.id_pemrakarsa = user_pemrakarsa.id_pemrakarsa)
-        and ((kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') or kegiatan.jenisdokumen = 'SPPL')
+        and ((kegiatan.jenisdokumen = 'UKL-UPL' and kegiatan.jenis_risiko = 'Menengah Rendah') or kegiatan.jenisdokumen = 'SPPL')"
+        . $dateFilter . "
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
         left join idn_adm1 AS i ON kl.id_prov = id_1 
         left join idn_adm2 AS i2 ON kl.id_kota = id_2
-        ". $filter . "and (to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now())"));
+        ". $filter));
+        // ". $filter . "and (to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now())"));
 
         return response()->json([
             "success" => true,
@@ -412,6 +414,24 @@ class KegiatanController extends Controller
         $subtract = $date - ($date - 1);
 
         $start = $month . "/0" . $subtract;
+
+        $data = [
+            'start' => $start,
+            'now' => $now
+        ];
+
+        return $data;
+    }
+
+    public function getStripDate()
+    {
+        $month = Carbon::now()->subMonths(3)->format('Y-m');
+        $now = Carbon::now()->format('Y-m-d');
+
+        $date = Carbon::now()->format('d');
+        $subtract = $date - ($date - 1);
+
+        $start = $month . "-0" . $subtract;
 
         $data = [
             'start' => $start,
