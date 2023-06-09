@@ -74,10 +74,17 @@ class KegiatanController extends Controller
 
         $filter = "";
         if ($request->provinsi && empty($request->kabkota)) {
-            $filter .= " WHERE i.provinsi LIKE '%" . $request->provinsi . "%' ";
-        } if ($request->kabkota && $request->kabkota) {
-            $filter .= " WHERE (i.provinsi LIKE '%" . $request->provinsi . "%' AND j.kab_kota LIKE '%" . $request->kabkota . "%') ";
+            $filter = " AND (i.provinsi like '%" . $request->provinsi . "%')";
+        } elseif ($request->provinsi && $request->kabkota) {
+            $filter = " AND (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
         }
+
+        // $filter = "";
+        // if ($request->provinsi && empty($request->kabkota)) {
+        //     $filter .= " WHERE i.provinsi LIKE '%" . $request->provinsi . "%' ";
+        // } if ($request->kabkota && $request->kabkota) {
+        //     $filter .= " WHERE (i.provinsi LIKE '%" . $request->provinsi . "%' AND j.kab_kota LIKE '%" . $request->kabkota . "%') ";
+        // }
 
         $total = DB::select(DB::raw("SELECT count(kegiatan.*)
         FROM kegiatan
