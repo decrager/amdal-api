@@ -171,14 +171,23 @@ class KegiatanController extends Controller
 
         $filter = "";
 
-        if ($request->kewenangan) {
+        if ($request->kewenangan == 'Pusat') {
+            $filter .= "";
+        } else if ($request->kewenangan != 'Pusat') {
             $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
         }
+
         if ($request->provinsi) {
             $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
             if ($request->kabkota) {
                 $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
             }
+        }
+
+        if ($request->filterKewenangan == 'all') {
+            $filter = "";
+        } else if ($request->filterKewenangan == 'Pusat') {
+            $filter = "AND kegiatan.kewenangan LIKE '%Pusat%' ";
         }
 
         if ($request->perbulan == 1) {
