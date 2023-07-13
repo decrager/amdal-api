@@ -190,13 +190,21 @@ class KegiatanController extends Controller
             $filter = "AND kegiatan.kewenangan LIKE '%Pusat%' ";
         }
 
+        if ($request->dokumen == 'UKL-UPL') {
+            $dokumen = "kegiatan.jenisdokumen = 'UKL-UPL' AND";
+        } else if ($request->dokumen == 'SPPL') {
+            $dokumen = "kegiatan.jenisdokumen = 'SPPL' AND";
+        } else {
+            $dokumen = "";
+        }
+
         if ($request->perbulan == 1) {
             $statistik = DB::select(DB::raw("SELECT count(*) AS jumlah, to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY-MM') AS bulan
             FROM kegiatan
             left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
             left join idn_adm1 AS i ON kl.id_prov = id_1
             left join idn_adm2 AS j ON kl.id_kota = j.id_2
-            WHERE kegiatan.jenisdokumen = 'UKL-UPL' AND kegiatan.jenis_risiko = 'Menengah Rendah'
+            WHERE " . $dokumen . " kegiatan.jenis_risiko = 'Menengah Rendah'
             ". $dateFilter . $filter ."
             GROUP BY bulan ORDER BY bulan ASC"));
         } else {
