@@ -35,6 +35,23 @@ class KegiatanController extends Controller
             $filter = " AND (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
         }
 
+        $search = "";
+        if ($request->search) {
+            $search .= " AND kegiatan.sid like '%". $request->search ."%'";
+            $search .= " AND oss_nib '%". $request->search ."%'";
+            $search .= " AND notelp '%". $request->search ."%'";
+            $search .= " AND email '%". $request->search ."%'";
+            $search .= " AND pemrakarsa '%". $request->search ."%'";
+            $search .= " AND judul_kegiatan '%". $request->search ."%'";
+            $search .= " AND skala '%". $request->search ."%'";
+            $search .= " AND kewenangan '%". $request->search ."%'";
+            $search .= " AND jenisdokumen '%". $request->search ."%'";
+            $search .= " AND jenis_risiko '%". $request->search ."%'";
+            $search .= " AND kbli '%". $request->search ."%'";
+            $search .= " AND name_1 '%". $request->search ."%'";
+            $search .= " AND name_2 '%". $request->search ."%'";
+        }
+
         $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, notelp, email, pemrakarsa, judul_kegiatan, skala, kewenangan,
         to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd HH24:MI:ss') AS tanggal_input,
         jenisdokumen, id_proyek, jenis_risiko, kbli, file, pkplh_doc, kl.lokasi, name_1 as prov, name_2 as kota,
@@ -48,6 +65,7 @@ class KegiatanController extends Controller
         left join idn_adm1 AS i ON kl.id_prov = id_1 
         left join idn_adm2 AS i2 ON kl.id_kota = id_2 " . $filter . "
         and (to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now())
+        " . $search . "
         ORDER BY sid desc" . $limit));
 
         return response()->json([
@@ -79,6 +97,23 @@ class KegiatanController extends Controller
             $filter = " AND (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
         }
 
+        $search = "";
+        if ($request->search) {
+            $search .= " AND kegiatan.sid like '%". $request->search ."%'";
+            $search .= " AND oss_nib '%". $request->search ."%'";
+            $search .= " AND notelp '%". $request->search ."%'";
+            $search .= " AND email '%". $request->search ."%'";
+            $search .= " AND pemrakarsa '%". $request->search ."%'";
+            $search .= " AND judul_kegiatan '%". $request->search ."%'";
+            $search .= " AND skala '%". $request->search ."%'";
+            $search .= " AND kewenangan '%". $request->search ."%'";
+            $search .= " AND jenisdokumen '%". $request->search ."%'";
+            $search .= " AND jenis_risiko '%". $request->search ."%'";
+            $search .= " AND kbli '%". $request->search ."%'";
+            $search .= " AND name_1 '%". $request->search ."%'";
+            $search .= " AND name_2 '%". $request->search ."%'";
+        }
+
         // $filter = "";
         // if ($request->provinsi && empty($request->kabkota)) {
         //     $filter .= " WHERE i.provinsi LIKE '%" . $request->provinsi . "%' ";
@@ -94,7 +129,7 @@ class KegiatanController extends Controller
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
         left join idn_adm1 AS i ON kl.id_prov = id_1 
         left join idn_adm2 AS i2 ON kl.id_kota = id_2
-        ". $filter));
+        ". $filter . $search));
         // ". $filter . "and (to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now())"));
 
         return response()->json([
