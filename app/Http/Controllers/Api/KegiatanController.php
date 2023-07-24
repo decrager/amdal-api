@@ -37,7 +37,6 @@ class KegiatanController extends Controller
 
         $search = "";
         if ($request->search) {
-            $search .= " AND kegiatan.sid like '%". $request->search ."%'";
             $search .= " AND oss_nib '%". $request->search ."%'";
             $search .= " AND notelp '%". $request->search ."%'";
             $search .= " AND email '%". $request->search ."%'";
@@ -99,7 +98,6 @@ class KegiatanController extends Controller
 
         $search = "";
         if ($request->search) {
-            $search .= " AND kegiatan.sid like '%". $request->search ."%'";
             $search .= " AND oss_nib '%". $request->search ."%'";
             $search .= " AND notelp '%". $request->search ."%'";
             $search .= " AND email '%". $request->search ."%'";
