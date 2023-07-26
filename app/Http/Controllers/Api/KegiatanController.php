@@ -37,18 +37,18 @@ class KegiatanController extends Controller
 
         $search = "";
         if ($request->search) {
-            $search .= " AND oss_nib '%". $request->search ."%'";
-            $search .= " AND notelp '%". $request->search ."%'";
-            $search .= " AND email '%". $request->search ."%'";
-            $search .= " AND pemrakarsa '%". $request->search ."%'";
-            $search .= " AND judul_kegiatan '%". $request->search ."%'";
-            $search .= " AND skala '%". $request->search ."%'";
-            $search .= " AND kewenangan '%". $request->search ."%'";
-            $search .= " AND jenisdokumen '%". $request->search ."%'";
-            $search .= " AND jenis_risiko '%". $request->search ."%'";
-            $search .= " AND kbli '%". $request->search ."%'";
-            $search .= " AND name_1 '%". $request->search ."%'";
-            $search .= " AND name_2 '%". $request->search ."%'";
+            $search .= " AND oss_nib like '%". $request->search ."%'";
+            $search .= " AND notelp like '%". $request->search ."%'";
+            $search .= " AND email like '%". $request->search ."%'";
+            $search .= " AND pemrakarsa like '%". $request->search ."%'";
+            $search .= " AND judul_kegiatan like '%". $request->search ."%'";
+            $search .= " AND skala like '%". $request->search ."%'";
+            $search .= " AND kewenangan like '%". $request->search ."%'";
+            $search .= " AND jenisdokumen like '%". $request->search ."%'";
+            $search .= " AND jenis_risiko like '%". $request->search ."%'";
+            $search .= " AND kbli like '%". $request->search ."%'";
+            $search .= " AND name_1 like '%". $request->search ."%'";
+            $search .= " AND name_2 like '%". $request->search ."%'";
         }
 
         $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, notelp, email, pemrakarsa, judul_kegiatan, skala, kewenangan,
@@ -98,18 +98,18 @@ class KegiatanController extends Controller
 
         $search = "";
         if ($request->search) {
-            $search .= " AND oss_nib '%". $request->search ."%'";
-            $search .= " AND notelp '%". $request->search ."%'";
-            $search .= " AND email '%". $request->search ."%'";
-            $search .= " AND pemrakarsa '%". $request->search ."%'";
-            $search .= " AND judul_kegiatan '%". $request->search ."%'";
-            $search .= " AND skala '%". $request->search ."%'";
-            $search .= " AND kewenangan '%". $request->search ."%'";
-            $search .= " AND jenisdokumen '%". $request->search ."%'";
-            $search .= " AND jenis_risiko '%". $request->search ."%'";
-            $search .= " AND kbli '%". $request->search ."%'";
-            $search .= " AND name_1 '%". $request->search ."%'";
-            $search .= " AND name_2 '%". $request->search ."%'";
+            $search .= " AND oss_nib like '%". $request->search ."%'";
+            $search .= " AND notelp like '%". $request->search ."%'";
+            $search .= " AND email like '%". $request->search ."%'";
+            $search .= " AND pemrakarsa like '%". $request->search ."%'";
+            $search .= " AND judul_kegiatan like '%". $request->search ."%'";
+            $search .= " AND skala like '%". $request->search ."%'";
+            $search .= " AND kewenangan like '%". $request->search ."%'";
+            $search .= " AND jenisdokumen like '%". $request->search ."%'";
+            $search .= " AND jenis_risiko like '%". $request->search ."%'";
+            $search .= " AND kbli like '%". $request->search ."%'";
+            $search .= " AND name_1 like '%". $request->search ."%'";
+            $search .= " AND name_2 like '%". $request->search ."%'";
         }
 
         // $filter = "";
