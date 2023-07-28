@@ -37,18 +37,18 @@ class KegiatanController extends Controller
 
         $search = "";
         if ($request->search) {
-            $search .= " AND oss_nib like '%". $request->search ."%'";
-            $search .= " AND notelp like '%". $request->search ."%'";
-            $search .= " AND email like '%". $request->search ."%'";
-            $search .= " AND pemrakarsa like '%". $request->search ."%'";
-            $search .= " AND judul_kegiatan like '%". $request->search ."%'";
-            $search .= " AND skala like '%". $request->search ."%'";
-            $search .= " AND kewenangan like '%". $request->search ."%'";
-            $search .= " AND jenisdokumen like '%". $request->search ."%'";
-            $search .= " AND jenis_risiko like '%". $request->search ."%'";
-            $search .= " AND kbli like '%". $request->search ."%'";
-            $search .= " AND name_1 like '%". $request->search ."%'";
-            $search .= " AND name_2 like '%". $request->search ."%'";
+            $search .= " WHERE oss_nib like '%". $request->search ."%'";
+            $search .= " OR notelp like '%". $request->search ."%'";
+            $search .= " OR email like '%". $request->search ."%'";
+            $search .= " OR pemrakarsa like '%". $request->search ."%'";
+            $search .= " OR judul_kegiatan like '%". $request->search ."%'";
+            $search .= " OR skala like '%". $request->search ."%'";
+            $search .= " OR kewenangan like '%". $request->search ."%'";
+            $search .= " OR jenisdokumen like '%". $request->search ."%'";
+            $search .= " OR jenis_risiko like '%". $request->search ."%'";
+            $search .= " OR kbli like '%". $request->search ."%'";
+            $search .= " OR name_1 like '%". $request->search ."%'";
+            $search .= " OR name_2 like '%". $request->search ."%'";
         }
 
         $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, notelp, email, pemrakarsa, judul_kegiatan, skala, kewenangan,
@@ -63,10 +63,10 @@ class KegiatanController extends Controller
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
         left join idn_adm1 AS i ON kl.id_prov = id_1 
         left join idn_adm2 AS i2 ON kl.id_kota = id_2 " . $filter . "
-        and (to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now())
         " . $search . "
-        ORDER BY sid desc" . $limit));
-
+        ORDER BY kegiatan.sid desc" . $limit));
+        
+        // and (to_timestamp(tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '2021-08-01' AND now())
         return response()->json([
             "success" => true,
             "message" => "Data List",
@@ -98,18 +98,18 @@ class KegiatanController extends Controller
 
         $search = "";
         if ($request->search) {
-            $search .= " AND oss_nib like '%". $request->search ."%'";
-            $search .= " AND notelp like '%". $request->search ."%'";
-            $search .= " AND email like '%". $request->search ."%'";
-            $search .= " AND pemrakarsa like '%". $request->search ."%'";
-            $search .= " AND judul_kegiatan like '%". $request->search ."%'";
-            $search .= " AND skala like '%". $request->search ."%'";
-            $search .= " AND kewenangan like '%". $request->search ."%'";
-            $search .= " AND jenisdokumen like '%". $request->search ."%'";
-            $search .= " AND jenis_risiko like '%". $request->search ."%'";
-            $search .= " AND kbli like '%". $request->search ."%'";
-            $search .= " AND name_1 like '%". $request->search ."%'";
-            $search .= " AND name_2 like '%". $request->search ."%'";
+            $search .= " WHERE oss_nib like '%". $request->search ."%'";
+            $search .= " OR notelp like '%". $request->search ."%'";
+            $search .= " OR email like '%". $request->search ."%'";
+            $search .= " OR pemrakarsa like '%". $request->search ."%'";
+            $search .= " OR judul_kegiatan like '%". $request->search ."%'";
+            $search .= " OR skala like '%". $request->search ."%'";
+            $search .= " OR kewenangan like '%". $request->search ."%'";
+            $search .= " OR jenisdokumen like '%". $request->search ."%'";
+            $search .= " OR jenis_risiko like '%". $request->search ."%'";
+            $search .= " OR kbli like '%". $request->search ."%'";
+            $search .= " OR name_1 like '%". $request->search ."%'";
+            $search .= " OR name_2 like '%". $request->search ."%'";
         }
 
         // $filter = "";
