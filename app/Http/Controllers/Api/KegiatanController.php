@@ -51,7 +51,7 @@ class KegiatanController extends Controller
             $search .= " OR name_2 like '%". $request->search ."%'";
         }
 
-        $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, notelp, email, pemrakarsa, judul_kegiatan, skala, kewenangan,
+        $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, kegiatan.kbli, notelp, email, pemrakarsa, judul_kegiatan, skala, kewenangan,
         to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd HH24:MI:ss') AS tanggal_input,
         jenisdokumen, id_proyek, jenis_risiko, kbli, file, pkplh_doc, kl.lokasi, name_1 as prov, name_2 as kota,
         case when file is null then '-' else concat('<a class=\"btn btn-sm btn-success\" href="."https://amdal.menlhk.go.id/amdalnet', replace(file,'./assets', '/assets'), '"." target="."_blank"."><i class=\"fas fa-download\"></i></a>') end as file_url,
