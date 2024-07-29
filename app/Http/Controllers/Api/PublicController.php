@@ -10,6 +10,17 @@ use Illuminate\Support\Facades\Hash;
 
 class PublicController extends Controller
 {
+    public function GetKey()
+    {
+        $key = DB::table('key')->first();
+
+        return response()->json([
+            "success" => true,
+            "message" => "Key",
+            "token" => $key->key
+        ]);
+    }
+
     public function index()
     {
         $user = User::all();

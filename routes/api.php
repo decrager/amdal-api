@@ -29,7 +29,9 @@ Route::post('users/create', [PublicController::class, 'create']);
 Route::put('users/update/{id}', [PublicController::class, 'update']);
 Route::delete('users/delete/{id}', [PublicController::class, 'destroy']);
 
-Route::middleware('auth:sanctum')->group( function () {
+Route::get('GetKey', [PublicController::class, 'GetKey']);  // Get Key
+
+Route::middleware('check.header')->group( function () {
     Route::get('get-user', [PassportAuthController::class, 'userInfo']);
     Route::get('kegiatan', [KegiatanController::class, 'index']); // Datatables
     Route::get('statistik', [KegiatanController::class, 'statistik']); // Statistik pertanggal
