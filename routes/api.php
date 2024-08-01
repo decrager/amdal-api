@@ -44,4 +44,5 @@ Route::middleware('check.header')->group( function () {
     Route::get('filteredTotal', [KegiatanController::class, 'filteredTotal']);
     Route::get('cluster', [KegiatanController::class, 'cluster']);
     Route::get('uklupl_sppl_tot', [KegiatanController::class, 'uklupl_sppl_tot']);
+    Route::get('totalByDate', [KegiatanController::class, 'totalByDate']);
 });

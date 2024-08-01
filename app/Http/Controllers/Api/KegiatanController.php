@@ -372,6 +372,46 @@ class KegiatanController extends Controller
         ]);
     }
 
+    public function totalByDate(Request $request)
+    {
+        $date_start = $request->start_date;
+        $date_end = $request->end_date;
+        $date = $this->getDate();
+
+        $dateFilter = "";
+        if ($date_start AND $date_end) {
+            $dateFilter .= " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date_start . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date_end . "' ";
+        } else {
+            $dateFilter .= " AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') >= '" . $date['start'] . "' AND to_char(to_timestamp(kegiatan.tanggal_input,'dd/MM/YYYY HH24:MI:ss'),'YYYY/MM/dd') <= '" . $date['now'] . "' ";
+        }
+
+        if ($request->dokumen) {
+            $filter = " WHERE kegiatan.jenisdokumen = '" . $request->dokumen . "' AND kegiatan.jenis_risiko = 'Menengah Rendah' ";
+        } else {
+            $filter = " WHERE (kegiatan.jenisdokumen = 'SPPL' or kegiatan.jenisdokumen = 'UKL-UPL') AND kegiatan.jenis_risiko = 'Menengah Rendah' ";
+        }
+
+        if ($request->dokumen && $request->kewenangan) {
+            $filter .= " AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            if ($request->provinsi) {
+                $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            }
+        }
+
+        $query = "SELECT count(kegiatan.id_izin) as jumlah FROM kegiatan
+        left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
+        left join idn_adm1 AS i ON kl.id_prov = id_1" .
+        $filter . $dateFilter;
+
+        $prov = DB::select(DB::raw($query));
+
+        return response()->json([
+            "success" => true,
+            "message" => "Data List",
+            "data" => $prov
+        ]);
+    }
+
     public function jml_prov(Request $request) // Jumlah UKL-UPL MR per provinsi di Admin Pusat
     {
         $date_start = $request->start_date;
