@@ -481,6 +481,9 @@ class KegiatanController extends Controller
         }
 
         $filter = "";
+        if ($request->kewenangan) {
+            $filter .= " AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+        }
         if ($request->provinsi) {
             $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
             if ($request->kabkota) {
