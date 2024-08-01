@@ -393,9 +393,9 @@ class KegiatanController extends Controller
 
         if ($request->dokumen && $request->kewenangan) {
             $filter .= " AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
-            if ($request->provinsi) {
-                $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
-            }
+        }
+        if ($request->provinsi) {
+            $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
         }
 
         $query = "SELECT count(kegiatan.id_izin) as jumlah FROM kegiatan
