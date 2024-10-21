@@ -496,7 +496,7 @@ class KegiatanController extends Controller
         } else {
             $count = 'count(*)';
         }
-        $total = DB::select(DB::raw("SELECT " . $count . " as distincted FROM kegiatan
+        $total = DB::select(DB::raw("SELECT " . $count . " FROM kegiatan
         left join kegiatan_lokasi as kl on kegiatan.id_kegiatan = kl.id_kegiatan
         left join idn_adm1 AS i ON kl.id_prov = id_1
         left join idn_adm2 AS j ON kl.id_kota = j.id_2
