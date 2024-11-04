@@ -76,10 +76,17 @@ class KegiatanController extends Controller
 
     public function filteredTotal(Request $request)
     {
-        #region Date Filter
+        #region
         $date_start = $request->start_date;
         $date_end = $request->end_date;
         $date = $this->getStripDate();
+
+        $filter = "";
+        if ($request->provinsi && $request->kabkota) {
+            $filter = " WHERE (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
+        } elseif ($request->provinsi) {
+            $filter = " WHERE (i.provinsi like '%" . $request->provinsi . "%')";
+        }
 
         $dateFilter = "";
         if ($date_start AND $date_end) {
@@ -88,13 +95,6 @@ class KegiatanController extends Controller
             $dateFilter .= " AND (to_timestamp(kegiatan.tanggal_input,'DD/MM/YYYY HH24:MI:SS') BETWEEN '". $date['start'] ."' AND now())";
         }
         #endregion
-
-        $filter = "";
-        if ($request->provinsi && empty($request->kabkota)) {
-            $filter = " AND (i.provinsi like '%" . $request->provinsi . "%')";
-        } elseif ($request->provinsi && $request->kabkota) {
-            $filter = " AND (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
-        }
 
         $search = "";
         if ($request->search) {
