@@ -30,25 +30,25 @@ class KegiatanController extends Controller
 
         $filter = "";
         if ($request->provinsi && empty($request->kabkota)) {
-            $filter = " AND (i.provinsi like '%" . $request->provinsi . "%')";
+            $filter = " WHERE (i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%')";
         } elseif ($request->provinsi && $request->kabkota) {
-            $filter = " AND (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
+            $filter = " WHERE (i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' and i2.kab_kota ILIKE '%" . str_replace(' ', '%', $request->kabkota) . "%') ";
         }
 
         $search = "";
         if ($request->search) {
-            $search .= " WHERE oss_nib like '%". $request->search ."%'";
-            $search .= " OR notelp like '%". $request->search ."%'";
-            $search .= " OR email like '%". $request->search ."%'";
-            $search .= " OR pemrakarsa like '%". $request->search ."%'";
-            $search .= " OR judul_kegiatan like '%". $request->search ."%'";
-            $search .= " OR skala like '%". $request->search ."%'";
-            $search .= " OR kewenangan like '%". $request->search ."%'";
-            $search .= " OR jenisdokumen like '%". $request->search ."%'";
-            $search .= " OR jenis_risiko like '%". $request->search ."%'";
-            $search .= " OR kbli like '%". $request->search ."%'";
-            $search .= " OR name_1 like '%". $request->search ."%'";
-            $search .= " OR name_2 like '%". $request->search ."%'";
+            $search .= " WHERE oss_nib ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR notelp ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR email ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR pemrakarsa ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR judul_kegiatan ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR skala ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR kewenangan ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR jenisdokumen ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR jenis_risiko ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR kbli ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR name_1 ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
+            $search .= " OR name_2 ILIKE '%". str_replace(' ', '%', $request->search) ."%'";
         }
 
         $kegiatan = DB::select(DB::raw("SELECT kegiatan.sid, oss_nib as nib, kegiatan.kbli, notelp, email, pemrakarsa, judul_kegiatan, skala, kewenangan,
@@ -83,9 +83,9 @@ class KegiatanController extends Controller
 
         $filter = "";
         if ($request->provinsi && $request->kabkota) {
-            $filter = " WHERE (i.provinsi like '%" . $request->provinsi . "%' and i2.kab_kota like '%" . $request->kabkota . "%') ";
+            $filter = " WHERE (i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' and i2.kab_kota ILIKE '%" . str_replace(' ', '%', $request->kabkota) . "%') ";
         } elseif ($request->provinsi) {
-            $filter = " WHERE (i.provinsi like '%" . $request->provinsi . "%')";
+            $filter = " WHERE (i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%')";
         }
 
         $dateFilter = "";
@@ -98,25 +98,25 @@ class KegiatanController extends Controller
 
         $search = "";
         if ($request->search) {
-            $search .= " WHERE oss_nib like '%". $request->search ."%'";
-            $search .= " OR notelp like '%". $request->search ."%'";
-            $search .= " OR email like '%". $request->search ."%'";
-            $search .= " OR pemrakarsa like '%". $request->search ."%'";
-            $search .= " OR judul_kegiatan like '%". $request->search ."%'";
-            $search .= " OR skala like '%". $request->search ."%'";
-            $search .= " OR kewenangan like '%". $request->search ."%'";
-            $search .= " OR jenisdokumen like '%". $request->search ."%'";
-            $search .= " OR jenis_risiko like '%". $request->search ."%'";
-            $search .= " OR kbli like '%". $request->search ."%'";
-            $search .= " OR name_1 like '%". $request->search ."%'";
-            $search .= " OR name_2 like '%". $request->search ."%'";
+            $search .= " WHERE oss_nib ILIKE '%". $request->search ."%'";
+            $search .= " OR notelp ILIKE '%". $request->search ."%'";
+            $search .= " OR email ILIKE '%". $request->search ."%'";
+            $search .= " OR pemrakarsa ILIKE '%". $request->search ."%'";
+            $search .= " OR judul_kegiatan ILIKE '%". $request->search ."%'";
+            $search .= " OR skala ILIKE '%". $request->search ."%'";
+            $search .= " OR kewenangan ILIKE '%". $request->search ."%'";
+            $search .= " OR jenisdokumen ILIKE '%". $request->search ."%'";
+            $search .= " OR jenis_risiko ILIKE '%". $request->search ."%'";
+            $search .= " OR kbli ILIKE '%". $request->search ."%'";
+            $search .= " OR name_1 ILIKE '%". $request->search ."%'";
+            $search .= " OR name_2 ILIKE '%". $request->search ."%'";
         }
 
         // $filter = "";
         // if ($request->provinsi && empty($request->kabkota)) {
-        //     $filter .= " WHERE i.provinsi LIKE '%" . $request->provinsi . "%' ";
+        //     $filter .= " WHERE i.provinsi ILIKE '%" . $request->provinsi . "%' ";
         // } if ($request->kabkota && $request->kabkota) {
-        //     $filter .= " WHERE (i.provinsi LIKE '%" . $request->provinsi . "%' AND j.kab_kota LIKE '%" . $request->kabkota . "%') ";
+        //     $filter .= " WHERE (i.provinsi ILIKE '%" . $request->provinsi . "%' AND j.kab_kota ILIKE '%" . $request->kabkota . "%') ";
         // }
 
         $total = DB::select(DB::raw("SELECT count(kegiatan.*)
@@ -168,9 +168,9 @@ class KegiatanController extends Controller
         $filter = "";
 
         if ($request->provinsi) {
-            $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            $filter .= " AND i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' ";
             if ($request->kabkota) {
-                $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                $filter .= " AND i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' AND j.kab_kota ILIKE '%" . str_replace(' ', '%', $request->kabkota) . "%' ";
             }
         }
 
@@ -207,20 +207,20 @@ class KegiatanController extends Controller
         if ($request->kewenangan == 'Pusat') {
             $filter .= "";
         } else if ($request->kewenangan != 'Pusat') {
-            $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            $filter .= "AND kegiatan.kewenangan ILIKE '%" . $request->kewenangan . "%' ";
         }
 
         if ($request->provinsi) {
-            $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            $filter .= "AND i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' ";
             if ($request->kabkota) {
-                $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                $filter .= "AND j.kab_kota ILIKE '%" . str_replace(' ', '%', $request->kabkota) . "%' ";
             }
         }
 
         if ($request->filterKewenangan == 'all') {
             $filter = "";
         } else if ($request->filterKewenangan == 'Pusat') {
-            $filter = "AND kegiatan.kewenangan LIKE '%Pusat%' ";
+            $filter = "AND kegiatan.kewenangan ILIKE '%Pusat%' ";
         }
 
         if ($request->dokumen == 'UKL-UPL') {
@@ -274,12 +274,12 @@ class KegiatanController extends Controller
         }
 
         if ($request->kewenangan) {
-            $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            $filter .= "AND kegiatan.kewenangan ILIKE '%" . $request->kewenangan . "%' ";
         }
         if ($request->provinsi) {
-            $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            $filter .= "AND i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' ";
             if ($request->kabkota) {
-                $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                $filter .= "AND j.kab_kota ILIKE '%" . str_replace(' ', '%', $request->kabkota) . "%' ";
             }
         }
 
@@ -312,12 +312,12 @@ class KegiatanController extends Controller
         }
 
         if ($request->kewenangan) {
-            $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            $filter .= "AND kegiatan.kewenangan ILIKE '%" . $request->kewenangan . "%' ";
         }
         if ($request->provinsi) {
-            $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            $filter .= "AND i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' ";
             if ($request->kabkota) {
-                $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                $filter .= "AND j.kab_kota ILIKE '%" . str_replace(' ', '%', $request->kabkota) . "%' ";
             }
         }
 
@@ -350,12 +350,12 @@ class KegiatanController extends Controller
         $filter = "";
 
         if ($request->kewenangan) {
-            $filter .= "AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            $filter .= "AND kegiatan.kewenangan ILIKE '%" . $request->kewenangan . "%' ";
         }
         if ($request->provinsi) {
-            $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            $filter .= "AND i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' ";
             if ($request->kabkota) {
-                $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                $filter .= "AND j.kab_kota ILIKE '%" . str_replace(' ', '%', $request->kabkota) . "%' ";
             }
         }
 
@@ -392,10 +392,10 @@ class KegiatanController extends Controller
         }
 
         if ($request->dokumen && $request->kewenangan) {
-            $filter .= " AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            $filter .= " AND kegiatan.kewenangan ILIKE '%" . $request->kewenangan . "%' ";
         }
         if ($request->provinsi) {
-            $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            $filter .= " AND i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' ";
         }
 
         $query = "SELECT count(kegiatan.id_izin) as jumlah FROM kegiatan
@@ -432,9 +432,9 @@ class KegiatanController extends Controller
         }
 
         if ($request->dokumen && $request->kewenangan) {
-            $filter .= " AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            $filter .= " AND kegiatan.kewenangan ILIKE '%" . $request->kewenangan . "%' ";
             if ($request->provinsi) {
-                $filter .= " AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+                $filter .= " AND i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' ";
             }
         }
 
@@ -482,12 +482,12 @@ class KegiatanController extends Controller
 
         $filter = "";
         if ($request->kewenangan) {
-            $filter .= " AND kegiatan.kewenangan LIKE '%" . $request->kewenangan . "%' ";
+            $filter .= " AND kegiatan.kewenangan ILIKE '%" . $request->kewenangan . "%' ";
         }
         if ($request->provinsi) {
-            $filter .= "AND i.provinsi LIKE '%" . $request->provinsi . "%' ";
+            $filter .= "AND i.provinsi ILIKE '%" . str_replace(' ', '%', $request->provinsi) . "%' ";
             if ($request->kabkota) {
-                $filter .= "AND j.kab_kota LIKE '%" . $request->kabkota . "%' ";
+                $filter .= "AND j.kab_kota ILIKE '%" . str_replace(' ', '%', $request->kabkota) . "%' ";
             }
         }
 
