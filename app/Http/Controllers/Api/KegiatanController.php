@@ -207,7 +207,11 @@ class KegiatanController extends Controller
         if ($request->kewenangan == 'Pusat') {
             $filter .= "";
         } else if ($request->kewenangan != 'Pusat') {
-            $filter .= "AND kegiatan.kewenangan ILIKE '%" . $request->kewenangan . "%' ";
+            if ($request->kewenangan == 'Kabupaten/Kota') {
+                $filter .= "AND kegiatan.kewenangan ILIKE 'Kab / Kota' ";
+            } else {
+                $filter .= "AND kegiatan.kewenangan ILIKE '%" . $request->kewenangan . "%' ";
+            }
         }
 
         if ($request->provinsi) {
@@ -250,7 +254,7 @@ class KegiatanController extends Controller
             ". $dateFilter . $filter ."
             GROUP BY tanggal_record ORDER BY tanggal_record ASC"));
         }
-
+        
         return response()->json([
             "success" => true,
             "message" => "Data List",
